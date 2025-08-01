@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id        String     @id @default(cuid())
+  firstName String
+  lastName  String
+  email     String     @unique
+  mobile    String
+  password  String
+  hostels   Hostel[]   @relation("HostelOwner")
+  employees Employee[] @relation("UserEmployees")
+  roomsOwned Room[]    @relation("RoomOwner")
+  scheduledForDeletionAt DateTime?
+}
+
+model Hostel {
+  id        String  @id @default(cuid())
+  name      String
+  location  String
+  rooms     Room[]
+  ownerId   String
+  owner     User    @relation("HostelOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Room {
+  id        String     @id @default(cuid())
+  name      String
+  capacity  Int
+  hostelId  String
+  hostel    Hostel     @relation(fields: [hostelId], references: [id])
+  occupants Employee[]     @relation("Occupants")
+  ownerId   String
+  owner     User       @relation("RoomOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+}
+
+model Employee {
+  id           String  @id @default(cuid())
+  userId       String
+  employee_of  User    @relation("UserEmployees", fields: [userId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  email        String @unique
+  mobile       String
+  roomId       String?
+  room         Room?    @relation("Occupants",fields: [roomId], references: [id])
+}
