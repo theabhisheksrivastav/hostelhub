@@ -1,15 +1,12 @@
-// lib/auth.ts
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
-export async function getCurrentUser() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
+export async function GET() {
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  return {
-    id: session.user.id,
-    email: session.user.email,
-    name: session.user.name,
-    firstName: session.user.name?.split(" ")[0] || "User",
-  };
+  return NextResponse.json(user);
 }
