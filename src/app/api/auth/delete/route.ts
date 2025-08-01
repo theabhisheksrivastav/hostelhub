@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
-type Params = { params: { id: string } };
 
-export async function DELETE(req: Request, { params }: Params) {
+export async function DELETE(req: Request) {
   const user = await getCurrentUser();
 
   if (!user) {
