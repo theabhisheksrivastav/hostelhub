@@ -23,7 +23,7 @@ export async function PUT(req: Request ) {
   if (email) {
     const existing = await prisma.employee.findUnique({ where: { email } });
 
-    if (existing && existing.id !== params.id && existing.userId !== user.id) {
+    if (existing && existing.id !== id && existing.userId !== user.id) {
       return NextResponse.json(
         { error: "Email is already in use by another employee" },
         { status: 400 }
@@ -64,9 +64,6 @@ export async function DELETE(req: Request ) {
       },
     });
 
-    if (deleted.count === 0) {
-      return NextResponse.json({ error: "Employee not found or not yours" }, { status: 404 });
-    }
 
     return NextResponse.json({ message: "Employee deleted" });
   } catch (err) {
