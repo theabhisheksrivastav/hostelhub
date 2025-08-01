@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 
-type Params = { params: { id: string } };
+  
 
 
 function getIdFromPath(req: Request): string | null {
@@ -11,7 +11,7 @@ function getIdFromPath(req: Request): string | null {
 }
 
 
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(req: Request ) {
   const { name, location } = await req.json();
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,7 +28,7 @@ export async function PUT(req: Request, { params }: Params) {
   return NextResponse.json(updated);
 }
 
-export async function DELETE(req: Request, { params }: Params) {
+export async function DELETE(req: Request ) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const id = getIdFromPath(req);
@@ -42,7 +42,7 @@ export async function DELETE(req: Request, { params }: Params) {
   return NextResponse.json({ message: "Hostel deleted" });
 }
 
-export async function  GET(req: Request, { params }: Params) {
+export async function  GET(req: Request ) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const id = getIdFromPath(req);

@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 
-type Params = { params: { id: string } };
+  
 
 
 export async function POST(req: Request) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request, { params }: Params) {
+export async function GET(req: Request ) {
   const { searchParams } = new URL(req.url);
   const hostelId = searchParams.get('hostelId');
 
