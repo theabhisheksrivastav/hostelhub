@@ -56,3 +56,9 @@ export async function getCurrentUser() {
     where: { email: session.user.email },
   });
 }
+
+export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
+  ...
+};
+
