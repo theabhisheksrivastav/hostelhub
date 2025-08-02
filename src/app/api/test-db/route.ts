@@ -8,7 +8,7 @@ export async function GET() {
   try {
     await prisma.user.findFirst();
     return NextResponse.json({ status: "success" });
-  } catch (error) {
+  } catch (error : any) {
     console.error("DB Test Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
