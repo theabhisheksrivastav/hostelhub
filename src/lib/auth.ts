@@ -57,8 +57,3 @@ export async function getCurrentUser() {
   });
 }
 
-export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
-  ...
-};
-
