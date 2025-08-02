@@ -246,7 +246,7 @@ export default function LandingPage() {
               </div>
               <div className="p-6">
                 <img
-                  src="/placeholder.svg?height=400&width=800&text=Dashboard+Preview"
+                  src="/new-logo.svg"
                   alt="HostelHub Dashboard"
                   className="w-full h-auto rounded-lg"
                 />
@@ -286,7 +286,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-indigo-600">
+      {/* <section className="py-16 bg-indigo-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
             <div>
@@ -304,6 +304,29 @@ export default function LandingPage() {
             <div>
               <div className="text-4xl font-bold text-white mb-2">24/7</div>
               <div className="text-indigo-200">Support Available</div>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
+      <section className="py-16 bg-indigo-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-4xl font-bold text-white mb-2">0</div>
+              <div className="text-indigo-200">Properties (So far...)</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-white mb-2">Maybe 1?</div>
+              <div className="text-indigo-200">Rooms Tracked (our own test room)</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-white mb-2">50%</div>
+              <div className="text-indigo-200">Uptime (we're working on it!)</div>
+            </div>
+            <div>
+              <div className="text-4xl font-bold text-white mb-2">Whenever</div>
+              <div className="text-indigo-200">Support (Text us... maybe?)</div>
             </div>
           </div>
         </div>
@@ -367,9 +390,8 @@ export default function LandingPage() {
             {pricingPlans.map((plan, index) => (
               <Card
                 key={index}
-                className={`relative bg-white shadow-sm border-gray-200 ${
-                  plan.popular ? "ring-2 ring-indigo-500 shadow-lg" : ""
-                }`}
+                className={`relative bg-white shadow-sm border-gray-200 ${plan.popular ? "ring-2 ring-indigo-500 shadow-lg" : ""
+                  }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -394,9 +416,8 @@ export default function LandingPage() {
                     ))}
                   </ul>
                   <Button
-                    className={`w-full mt-6 ${
-                      plan.popular ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-900 hover:bg-gray-800 text-white"
-                    }`}
+                    className={`w-full mt-6 ${plan.popular ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-900 hover:bg-gray-800 text-white"
+                      }`}
                   >
                     {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
                   </Button>
