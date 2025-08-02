@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
 import { getCurrentUser } from "@/lib/auth";
 
 // ✅ GET: Unassigned Employees with search & pagination
@@ -20,9 +22,9 @@ export async function GET(req: NextRequest) {
     roomId: null,
     ...(search && {
       OR: [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
+        { firstName: { contains: search, mode: Prisma.QueryMode.insensitive } },
+        { lastName: { contains: search, mode: Prisma.QueryMode.insensitive } },
+        { email: { contains: search, mode: Prisma.QueryMode.insensitive } },
       ],
     }),
   };

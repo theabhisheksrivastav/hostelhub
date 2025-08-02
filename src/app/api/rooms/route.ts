@@ -33,7 +33,8 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request ) {
   const { searchParams } = new URL(req.url);
-  const hostelId = searchParams.get('hostelId');
+  const hostelId = searchParams.get('hostelId') ?? undefined;
+
 
 
   const user = await getCurrentUser();

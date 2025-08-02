@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -11,11 +13,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const existing = await prisma.Employee.findFirst({ where: { email } });
+    const existing = await prisma.employee.findFirst({ where: { email } });
     if (existing) return NextResponse.json({ error: "Employee with email already exists" }, { status: 400 });
 
 
-    const employee = await prisma.Employee.create({
+    const employee = await prisma.employee.create({
       data: {
         firstName,
         lastName,
@@ -51,18 +53,18 @@ export async function GET(req: Request) {
   const searchConditions =
     searchTerms.length === 1
       ? [
-          { firstName: { contains: search, mode: "insensitive" } },
-          { lastName: { contains: search, mode: "insensitive" } },
-          { email: { contains: search, mode: "insensitive" } },
+          { firstName: { contains: search, mode: Prisma.QueryMode.insensitive} },
+          { lastName: { contains: search, mode: Prisma.QueryMode.insensitive} },
+          { email: { contains: search, mode: Prisma.QueryMode.insensitive} },
         ]
       : [
           {
             AND: [
-              { firstName: { contains: searchTerms[0], mode: "insensitive" } },
-              { lastName: { contains: searchTerms[1], mode: "insensitive" } },
+              { firstName: { contains: searchTerms[0], mode: Prisma.QueryMode.insensitive} },
+              { lastName: { contains: searchTerms[1], mode: Prisma.QueryMode.insensitive} },
             ],
           },
-          { email: { contains: search, mode: "insensitive" } },
+          { email: { contains: search, mode: Prisma.QueryMode.insensitive} },
         ];
 
   try {
