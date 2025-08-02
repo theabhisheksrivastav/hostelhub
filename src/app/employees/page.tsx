@@ -1,256 +1,222 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react"
+import { DashboardLayout } from "@/components/dashboard-layout"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { AddEmployeeModal } from "@/components/add-employee-modal"
+import { Plus, Search, Filter, MoreHorizontal, Users, UserCheck, UserX } from "lucide-react"
 
-interface Employee {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  mobile: string;
-}
+const employees = [
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john.doe@hostelhub.com",
+    phone: "+1 (555) 123-4567",
+    hostel: "Sunrise Hostel",
+    department: "Reception",
+    status: "active",
+    joinDate: "2023-01-15",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: 2,
+    name: "Sarah Johnson",
+    email: "sarah.j@hostelhub.com",
+    phone: "+1 (555) 234-5678",
+    hostel: "Moonlight Hostel",
+    department: "Housekeeping",
+    status: "active",
+    joinDate: "2023-02-20",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: 3,
+    name: "Mike Chen",
+    email: "mike.chen@hostelhub.com",
+    phone: "+1 (555) 345-6789",
+    hostel: "City Center Hostel",
+    department: "Maintenance",
+    status: "inactive",
+    joinDate: "2023-03-10",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+  {
+    id: 4,
+    name: "Emma Wilson",
+    email: "emma.w@hostelhub.com",
+    phone: "+1 (555) 456-7890",
+    hostel: "Garden View Hostel",
+    department: "Security",
+    status: "active",
+    joinDate: "2023-04-05",
+    avatar: "/placeholder.svg?height=40&width=40",
+  },
+]
 
 export default function EmployeesPage() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [form, setForm] = useState<Employee>({
-    id: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    mobile: "",
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [editing, setEditing] = useState(false);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
-  const [totalPages, setTotalPages] = useState(1);
+  const [showAddEmployee, setShowAddEmployee] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
 
-  const fetchEmployees = async () => {
-    try {
-      const res = await fetch(
-        `/api/employees?page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`
-      );
-      const data = await res.json();
-      setEmployees(data?.data || []);
-      setTotalPages(data.meta?.totalPages || 1);
-    } catch (err) {
-      console.error("Failed to load employees:", err);
-    }
-  };
+  const filteredEmployees = employees.filter(
+    (employee) =>
+      employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.hostel.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch(`/api/employees${editing ? `/${form.id}` : ""}`, {
-        method: editing ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Unknown error");
-
-      setForm({ id: "", firstName: "", lastName: "", email: "", mobile: "" });
-      setEditing(false);
-      fetchEmployees();
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (emp: Employee) => {
-    setForm(emp);
-    setEditing(true);
-  };
-
-  const handleDelete = async () => {
-    if (!deletingId) return;
-    setLoading(true);
-    try {
-      await fetch(`/api/employees/${deletingId}`, { method: "DELETE" });
-      setDeletingId(null);
-      fetchEmployees();
-    } catch (err) {
-      console.error("Failed to delete:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployees();
-  }, [page]);
+  const activeEmployees = employees.filter((emp) => emp.status === "active").length
+  const inactiveEmployees = employees.filter((emp) => emp.status === "inactive").length
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Employees</h1>
-      <div className="flex items-center gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Search employees..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border p-2 rounded w-full"
-        />
-        <button
-          onClick={() => {
-            setPage(1); // reset to page 1 on new search
-            fetchEmployees(); // manually trigger fetch
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Search
-        </button>
-      </div>
-
-
-      <form onSubmit={handleSubmit} className="space-y-4 mb-6">
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={form.firstName}
-            onChange={handleChange}
-            className="border p-2 rounded"
-            required
-          />
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={form.lastName}
-            onChange={handleChange}
-            className="border p-2 rounded"
-            required
-          />
-        </div>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-          required
-        />
-        <input
-          type="text"
-          name="mobile"
-          placeholder="Mobile"
-          value={form.mobile}
-          onChange={handleChange}
-          className="border p-2 rounded w-full"
-          required
-        />
-        {error && <p className="text-red-500">{error}</p>}
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          disabled={loading}
-        >
-          {loading ? (editing ? "Updating..." : "Adding...") : editing ? "Update" : "Add Employee"}
-        </button>
-        {editing && (
-          <button
-            type="button"
-            className="ml-2 text-sm text-gray-600 underline"
-            onClick={() => {
-              setEditing(false);
-              setForm({ id: "", firstName: "", lastName: "", email: "", mobile: "" });
-            }}
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
-      <ul className="space-y-2">
-        {employees.length === 0 ? (
-          <li>No employees found.</li>
-        ) : (
-          employees.map((emp) => (
-            <li key={emp.id} className="border p-4 rounded">
-              <p>
-                <strong>
-                  {emp.firstName} {emp.lastName}
-                </strong>
-              </p>
-              <p>Email: {emp.email}</p>
-              <p>Mobile: {emp.mobile}</p>
-              <div className="mt-2 space-x-2">
-                <button
-                  onClick={() => handleEdit(emp)}
-                  className="text-blue-600 underline"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => setDeletingId(emp.id)}
-                  className="text-red-600 underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))
-        )}
-      </ul>
-
-      {/* Pagination */}
-      <div className="flex justify-between mt-6">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="text-sm">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-          className="text-sm px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
-
-      {/* Delete Modal */}
-      {deletingId && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow max-w-sm w-full">
-            <p className="mb-4">Are you sure you want to delete this employee?</p>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => setDeletingId(null)}
-                className="px-3 py-1 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="px-3 py-1 bg-red-600 text-white rounded"
-              >
-                Delete
-              </button>
-            </div>
+    <DashboardLayout>
+      <div className="flex-1 space-y-6 p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Employees</h1>
+            <p className="text-gray-600 mt-1">Manage your hostel staff and their information</p>
           </div>
+          <Button onClick={() => setShowAddEmployee(true)} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+            <Plus className="h-4 w-4" />
+            Add Employee
+          </Button>
         </div>
-      )}
-    </div>
-  );
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card className="bg-white shadow-sm border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Employees</CardTitle>
+              <Users className="h-4 w-4 text-gray-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-gray-900">{employees.length}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white shadow-sm border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Active</CardTitle>
+              <UserCheck className="h-4 w-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{activeEmployees}</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white shadow-sm border-gray-200">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Inactive</CardTitle>
+              <UserX className="h-4 w-4 text-red-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{inactiveEmployees}</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search and Filter */}
+        <Card className="bg-white shadow-sm border-gray-200">
+          <CardHeader>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Search employees..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button variant="outline" className="gap-2 bg-transparent">
+                <Filter className="h-4 w-4" />
+                Filter
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Employee</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Hostel</TableHead>
+                  <TableHead>Department</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Join Date</TableHead>
+                  <TableHead className="w-[50px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredEmployees.map((employee) => (
+                  <TableRow key={employee.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={employee.avatar || "/placeholder.svg"} alt={employee.name} />
+                          <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                            {employee.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-gray-900">{employee.name}</p>
+                          <p className="text-sm text-gray-500">{employee.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm text-gray-900">{employee.phone}</p>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm text-gray-900">{employee.hostel}</p>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                        {employee.department}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={employee.status === "active" ? "default" : "secondary"}
+                        className={
+                          employee.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }
+                      >
+                        {employee.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm text-gray-900">{employee.joinDate}</p>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+
+      <AddEmployeeModal open={showAddEmployee} onOpenChange={setShowAddEmployee} />
+    </DashboardLayout>
+  )
 }
