@@ -32,6 +32,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const { firstName, lastName, email, password, mobile } = body;
+    console.log("DB URL:", process.env.DATABASE_URL)
 
 
     const existing = await prisma.user.findUnique({ where: { email } });
