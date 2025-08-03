@@ -8,6 +8,7 @@ import { ContactSalesModal } from "@/components/ContactSalesModal"
 import { PaymentModal } from "@/components/PaymentModal"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import Modal from "@/components/Modal"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   ArrowRight,
@@ -137,6 +138,7 @@ export default function LandingPage() {
   const [showContactModal, setShowContactModal] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
   const [selectedPrice, setSelectedPrice] = useState("")
+  const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter()
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -550,12 +552,18 @@ export default function LandingPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     API
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Integrations
                   </a>
                 </li>
@@ -566,22 +574,33 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     About
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Blog
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Careers
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                  e.preventDefault();
+                setShowContactModal(true);}} className="hover:text-white transition-colors">
                     Contact
                   </a>
                 </li>
@@ -592,22 +611,34 @@ export default function LandingPage() {
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Help Center
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Documentation
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Status
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition-colors">
+                  <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="hover:text-white transition-colors">
                     Community
                   </a>
                 </li>
@@ -618,19 +649,34 @@ export default function LandingPage() {
           <div className="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">© 2025 HostelHub. All rights reserved.</p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+              <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="text-gray-400 hover:text-white text-sm transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+              <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="text-gray-400 hover:text-white text-sm transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+              <a href="#" onClick={(e) => {
+                e.preventDefault();
+                setModalOpen(true);
+              }} className="text-gray-400 hover:text-white text-sm transition-colors">
                 Cookie Policy
               </a>
             </div>
           </div>
         </div>
       </footer>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
     </div>
   )
 }

@@ -20,77 +20,130 @@ import { Textarea } from "@/components/ui/textarea"
 import { Plus, Building, MapPin, Users, Bed, Star } from "lucide-react"
 import { HostelDetailsModal } from "@/components/hostel-details-modal"
 import { HostelManageModal } from "@/components/hostel-manage-modal"
+import { useEffect } from "react"
+import Modal from "@/components/Modal"
 
-const hostels = [
-  {
-    id: 1,
-    name: "Sunrise Hostel",
-    address: "123 Main Street, Downtown",
-    totalRooms: 50,
-    occupiedRooms: 43,
-    totalEmployees: 12,
-    rating: 4.5,
-    amenities: ["WiFi", "Laundry", "Kitchen", "Parking"],
-    status: "active",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 2,
-    name: "Moonlight Hostel",
-    address: "456 Oak Avenue, Midtown",
-    totalRooms: 40,
-    occupiedRooms: 35,
-    totalEmployees: 10,
-    rating: 4.3,
-    amenities: ["WiFi", "Gym", "Rooftop", "Cafe"],
-    status: "active",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 3,
-    name: "City Center Hostel",
-    address: "789 Pine Road, City Center",
-    totalRooms: 60,
-    occupiedRooms: 52,
-    totalEmployees: 15,
-    rating: 4.7,
-    amenities: ["WiFi", "Restaurant", "Spa", "Pool"],
-    status: "active",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-  {
-    id: 4,
-    name: "Garden View Hostel",
-    address: "321 Elm Street, Suburbs",
-    totalRooms: 35,
-    occupiedRooms: 28,
-    totalEmployees: 8,
-    rating: 4.2,
-    amenities: ["WiFi", "Garden", "BBQ", "Playground"],
-    status: "maintenance",
-    image: "/placeholder.svg?height=200&width=300",
-  },
-]
+
+// const hostels = [
+//   {
+//     id: 1,
+//     name: "Sunrise Hostel",
+//     address: "123 Main Street, Downtown",
+//     totalRooms: 50,
+//     occupiedRooms: 43,
+//     totalEmployees: 12,
+//     rating: 4.5,
+//     amenities: ["WiFi", "Laundry", "Kitchen", "Parking"],
+//     status: "active",
+//     image: "/placeholder.svg?height=200&width=300",
+//   },
+//   {
+//     id: 2,
+//     name: "Moonlight Hostel",
+//     address: "456 Oak Avenue, Midtown",
+//     totalRooms: 40,
+//     occupiedRooms: 35,
+//     totalEmployees: 10,
+//     rating: 4.3,
+//     amenities: ["WiFi", "Gym", "Rooftop", "Cafe"],
+//     status: "active",
+//     image: "/placeholder.svg?height=200&width=300",
+//   },
+//   {
+//     id: 3,
+//     name: "City Center Hostel",
+//     address: "789 Pine Road, City Center",
+//     totalRooms: 60,
+//     occupiedRooms: 52,
+//     totalEmployees: 15,
+//     rating: 4.7,
+//     amenities: ["WiFi", "Restaurant", "Spa", "Pool"],
+//     status: "active",
+//     image: "/placeholder.svg?height=200&width=300",
+//   },
+//   {
+//     id: 4,
+//     name: "Garden View Hostel",
+//     address: "321 Elm Street, Suburbs",
+//     totalRooms: 35,
+//     occupiedRooms: 28,
+//     totalEmployees: 8,
+//     rating: 4.2,
+//     amenities: ["WiFi", "Garden", "BBQ", "Playground"],
+//     status: "maintenance",
+//     image: "/placeholder.svg?height=200&width=300",
+//   },
+// ]
+
+type Hostel = {
+  id: string
+  name: string
+  address: string
+  image?: string
+  rating: number
+  status: "active" | "inactive" | string
+  totalRooms: number
+  occupiedRooms: number
+  totalEmployees: number
+  amenities: string[]
+  rooms?: {
+    occupants?: any[]
+  }[]
+}
+
+
+
 
 export default function HostelsPage() {
   const [showAddHostel, setShowAddHostel] = useState(false)
   const [selectedHostel, setSelectedHostel] = useState(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showManageModal, setShowManageModal] = useState(false)
+  const [hostels, setHostels] = useState<Hostel[]>([])
+  const [isModalOpen, setModalOpen] = useState(false)
 
-  const totalRooms = hostels.reduce((sum, hostel) => sum + hostel.totalRooms, 0)
-  const totalOccupied = hostels.reduce((sum, hostel) => sum + hostel.occupiedRooms, 0)
-  const averageOccupancy = Math.round((totalOccupied / totalRooms) * 100)
+  useEffect(() => {
+    const fetchHostels = async () => {
+      try {
+        const res = await fetch("/api/hostels")
+        const data = await res.json()
+        setHostels(data)
+      } catch (error) {
+        console.error("Failed to load hostels:", error)
+      }
+    }
 
-  const handleViewDetails = (hostel) => {
-    setSelectedHostel(hostel)
-    setShowDetailsModal(true)
-  }
+    fetchHostels()
+  }, [])
+  const totalRooms = hostels.reduce(
+    (sum, hostel) => sum + (hostel.rooms?.length || 0),
+    0
+  )
 
-  const handleManage = (hostel) => {
-    setSelectedHostel(hostel)
-    setShowManageModal(true)
-  }
+  const totalOccupied = hostels.reduce((sum, hostel) => {
+    return (
+      sum +
+      (hostel.rooms?.reduce(
+        (roomSum, room) => roomSum + (room.occupants?.length || 0),
+        0
+      ) || 0)
+    )
+  }, 0)
+
+  const totalEmployees = totalOccupied // if each occupant is considered one employee
+  const averageOccupancy =
+    totalRooms > 0 ? Math.round((totalOccupied / totalRooms) * 100) : 0
+
+
+  // const handleViewDetails = (hostel) => {
+  //   setSelectedHostel(hostel)
+  //   setShowDetailsModal(true)
+  // }
+
+  // const handleManage = (hostel) => {
+  //   setSelectedHostel(hostel)
+  //   setShowManageModal(true)
+  // }
 
   return (
     <DashboardLayout>
@@ -148,7 +201,7 @@ export default function HostelsPage() {
 
         {/* Hostels Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {hostels.map((hostel) => {
+          {hostels.map((hostel: Hostel) => {
             const occupancyRate = Math.round((hostel.occupiedRooms / hostel.totalRooms) * 100)
 
             return (
@@ -160,13 +213,13 @@ export default function HostelsPage() {
                     className="w-full h-full object-cover"
                   />
                   <Badge
-                    className={`absolute top-3 right-3 ${
-                      hostel.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                    }`}
+                    className={`absolute top-3 right-3 ${hostel.status === "active" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                      }`}
                   >
                     {hostel.status}
                   </Badge>
                 </div>
+
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
@@ -182,6 +235,7 @@ export default function HostelsPage() {
                     </div>
                   </div>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
@@ -205,7 +259,7 @@ export default function HostelsPage() {
                   <div>
                     <p className="text-sm text-gray-600 mb-2">Amenities</p>
                     <div className="flex flex-wrap gap-1">
-                      {hostel.amenities.map((amenity) => (
+                      {hostel.amenities?.map((amenity) => (
                         <Badge key={amenity} variant="secondary" className="text-xs">
                           {amenity}
                         </Badge>
@@ -218,14 +272,20 @@ export default function HostelsPage() {
                       variant="outline"
                       size="sm"
                       className="flex-1 bg-transparent"
-                      onClick={() => handleViewDetails(hostel)}
+                      onClick={(e) => {
+
+                        setModalOpen(true);
+                      }}
                     >
                       View Details
                     </Button>
                     <Button
                       size="sm"
                       className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-                      onClick={() => handleManage(hostel)}
+                      onClick={(e) => {
+
+                        setModalOpen(true);
+                      }}
                     >
                       Manage
                     </Button>
@@ -234,6 +294,13 @@ export default function HostelsPage() {
               </Card>
             )
           })}
+
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+            title="Feature Unavailable"
+            description="This feature is not yet available. We're working hard to launch it soon!"
+          />
         </div>
       </div>
 

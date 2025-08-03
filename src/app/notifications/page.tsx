@@ -29,45 +29,46 @@ import {
   Trash2,
   BookMarkedIcon as MarkAsUnread,
 } from "lucide-react"
+import Modal from "@/components/Modal"
 
 const allNotifications = [
   {
     id: 1,
     type: "booking",
-    title: "New Booking Received",
-    message: "Sarah Johnson booked Room 204 for 3 nights starting tomorrow. Total amount: $240",
-    time: "2 minutes ago",
-    timestamp: new Date(Date.now() - 2 * 60 * 1000),
+    title: "Room Booked by a Cat",
+    message: "Whiskers reserved Room 204 for 3 nights. Special request: extra tuna on pillows.",
+    time: "Just now",
+    timestamp: new Date(Date.now()),
     read: false,
     starred: false,
     priority: "normal",
     icon: Bed,
     color: "text-blue-600",
     bgColor: "bg-blue-100",
-    sender: "Booking System",
+    sender: "Meow Reservations™",
     category: "bookings",
   },
   {
     id: 2,
     type: "checkin",
-    title: "Guest Check-in Completed",
-    message: "Mike Chen successfully checked into Room 156. Welcome package delivered.",
-    time: "15 minutes ago",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
+    title: "Alien Checked In",
+    message: "Zorg from Planet X-12 successfully checked into Room 156. Complimentary space helmet provided.",
+    time: "10 minutes ago",
+    timestamp: new Date(Date.now() - 10 * 60 * 1000),
     read: false,
     starred: true,
     priority: "normal",
     icon: UserCheck,
     color: "text-green-600",
     bgColor: "bg-green-100",
-    sender: "Reception",
+    sender: "Galaxy Reception",
     category: "operations",
   },
   {
     id: 3,
     type: "maintenance",
-    title: "Urgent: Maintenance Request",
-    message: "AC repair needed in Room 301. Guest reported issue. Maintenance team notified.",
+    title: "Shark in the Bathtub",
+    message: "Room 301 reports an unexpected aquatic visitor. Maintenance sent with snorkels.",
     time: "1 hour ago",
     timestamp: new Date(Date.now() - 60 * 60 * 1000),
     read: true,
@@ -76,30 +77,30 @@ const allNotifications = [
     icon: Wrench,
     color: "text-orange-600",
     bgColor: "bg-orange-100",
-    sender: "Maintenance Dept",
+    sender: "Aquatic Maintenance Squad",
     category: "maintenance",
   },
   {
     id: 4,
     type: "payment",
-    title: "Payment Received",
-    message: "$240 payment confirmed for booking #1234. Transaction ID: TXN789456123",
+    title: "Payment Received in Gold Coins",
+    message: "Booking #1234 paid in pirate treasure. Estimated value: $240. Yarrr!",
     time: "2 hours ago",
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
     read: true,
     starred: false,
     priority: "normal",
     icon: DollarSign,
-    color: "text-green-600",
-    bgColor: "bg-green-100",
-    sender: "Payment Gateway",
+    color: "text-yellow-600",
+    bgColor: "bg-yellow-100",
+    sender: "Captain Payment",
     category: "financial",
   },
   {
     id: 5,
     type: "alert",
-    title: "Low Occupancy Alert",
-    message: "Garden View Hostel occupancy dropped to 58%. Consider promotional campaigns.",
+    title: "Ghost Sighting Reported",
+    message: "Guests in Garden View Hostel report spooky activity. Occupancy dropped to 58%.",
     time: "3 hours ago",
     timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
     read: true,
@@ -108,14 +109,14 @@ const allNotifications = [
     icon: AlertCircle,
     color: "text-red-600",
     bgColor: "bg-red-100",
-    sender: "Analytics System",
+    sender: "Paranormal Dept",
     category: "alerts",
   },
   {
     id: 6,
     type: "schedule",
-    title: "Staff Schedule Update",
-    message: "Emma Wilson's shift changed for tomorrow (Jan 16). New time: 10:00 AM - 7:00 PM",
+    title: "Staff Teleported",
+    message: "Emma Wilson’s shift now starts in a parallel universe. Notify HR of any time loops.",
     time: "5 hours ago",
     timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
     read: true,
@@ -124,14 +125,14 @@ const allNotifications = [
     icon: Calendar,
     color: "text-purple-600",
     bgColor: "bg-purple-100",
-    sender: "HR System",
+    sender: "HR Portal v3.14",
     category: "staff",
   },
   {
     id: 7,
     type: "review",
-    title: "New Guest Review",
-    message: "5-star review received from John Smith: 'Excellent service and clean rooms!'",
+    title: "Unicorn Left a Review",
+    message: "⭐️⭐️⭐️⭐️⭐️ 'The beds are made of clouds. Will return after next rainbow.' – Sparkles",
     time: "1 day ago",
     timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
     read: true,
@@ -140,14 +141,14 @@ const allNotifications = [
     icon: MessageSquare,
     color: "text-indigo-600",
     bgColor: "bg-indigo-100",
-    sender: "Review System",
+    sender: "Mythical Reviews Inc.",
     category: "reviews",
   },
   {
     id: 8,
     type: "system",
-    title: "System Backup Completed",
-    message: "Daily backup completed successfully. All data secured for January 15, 2024.",
+    title: "AI Overlord Approved",
+    message: "System backup complete. AI overlord satisfied. Continue operations... for now.",
     time: "1 day ago",
     timestamp: new Date(Date.now() - 25 * 60 * 60 * 1000),
     read: true,
@@ -156,10 +157,11 @@ const allNotifications = [
     icon: Settings,
     color: "text-gray-600",
     bgColor: "bg-gray-100",
-    sender: "System",
+    sender: "Sentient Server",
     category: "system",
   },
 ]
+
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState(allNotifications)
@@ -168,6 +170,8 @@ export default function NotificationsPage() {
   const [filterPriority, setFilterPriority] = useState("all")
   const [selectedNotifications, setSelectedNotifications] = useState<number[]>([])
   const [activeTab, setActiveTab] = useState("all")
+  const [isModalOpen, setModalOpen] = useState(true)
+
 
   const filteredNotifications = notifications.filter((notification) => {
     const matchesSearch =
@@ -233,6 +237,12 @@ export default function NotificationsPage() {
 
   return (
     <DashboardLayout>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
       <div className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>

@@ -74,6 +74,14 @@ export async function GET(req: Request) {
           userId: user.id,
           OR: search ? searchConditions : undefined,
         },
+        include: {
+          room: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
         skip: offset,
         take: limit,
         orderBy: {

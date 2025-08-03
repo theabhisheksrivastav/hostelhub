@@ -18,6 +18,7 @@ export default function Dashboard() {
         <WelcomeSection />
         <MetricsCards />
 
+        <RoomOccupancyTable />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RecentActivity />
           <div className="space-y-6">
@@ -25,7 +26,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <RoomOccupancyTable />
+
       </div>
 
       <AddEmployeeModal open={showAddEmployee} onOpenChange={setShowAddEmployee} />

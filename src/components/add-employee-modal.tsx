@@ -30,12 +30,33 @@ export function AddEmployeeModal({ open, onOpenChange }: AddEmployeeModalProps) 
     hostel: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission
-    console.log("Employee data:", formData)
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+
+  try {
+    const res = await fetch("/api/employees", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        mobile: formData.mobile,
+        
+      }),
+    })
+
+    const result = await res.json()
+
+    if (!res.ok) {
+      alert(result.error || "Something went wrong")
+      return
+    }
+
+    console.log("Employee added:", result.employee)
     onOpenChange(false)
-    // Reset form
     setFormData({
       firstName: "",
       lastName: "",
@@ -43,7 +64,12 @@ export function AddEmployeeModal({ open, onOpenChange }: AddEmployeeModalProps) 
       mobile: "",
       hostel: "",
     })
+  } catch (error) {
+    console.error("Failed to add employee:", error)
+    alert("Failed to add employee")
   }
+}
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -9,11 +9,19 @@ import { getCurrentUser } from '@/lib/auth';
 export async function POST(req: Request) {
   const data = await req.json();
   const { name, hostelId, capacity } = data;
+  console.log("Received data:", data);
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
 
   try {
+    const hostel = await prisma.hostel.findUnique({
+  where: { id: hostelId },
+});
+
+if (!hostel) {
+  return NextResponse.json({ error: "Hostel not found" },{hostelId}, { status: 404 });
+}
     const room = await prisma.room.create({
       data: {
         name, capacity, owner: {

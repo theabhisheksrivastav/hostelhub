@@ -13,53 +13,81 @@ import { AddEmployeeModal } from "@/components/add-employee-modal"
 import { Plus, Search, Filter, MoreHorizontal, Users, UserCheck, UserX } from "lucide-react"
 import { EmployeeDetailsModal } from "@/components/employee-details-modal"
 import { EmployeeEditModal } from "@/components/employee-edit-modal"
+import { useEffect } from "react"
+import Modal from "@/components/Modal"
 
-const employees = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@hostelhub.com",
-    phone: "+1 (555) 123-4567",
-    hostel: "Sunrise Hostel",
-    department: "Reception",
-    status: "active",
-    joinDate: "2023-01-15",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 2,
-    name: "Sarah Johnson",
-    email: "sarah.j@hostelhub.com",
-    phone: "+1 (555) 234-5678",
-    hostel: "Moonlight Hostel",
-    department: "Housekeeping",
-    status: "active",
-    joinDate: "2023-02-20",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 3,
-    name: "Mike Chen",
-    email: "mike.chen@hostelhub.com",
-    phone: "+1 (555) 345-6789",
-    hostel: "City Center Hostel",
-    department: "Maintenance",
-    status: "inactive",
-    joinDate: "2023-03-10",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-  {
-    id: 4,
-    name: "Emma Wilson",
-    email: "emma.w@hostelhub.com",
-    phone: "+1 (555) 456-7890",
-    hostel: "Garden View Hostel",
-    department: "Security",
-    status: "active",
-    joinDate: "2023-04-05",
-    avatar: "/placeholder.svg?height=40&width=40",
-  },
-]
+type Employee = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  mobile?: string
+  roomId?: string
+  room?: {
+    id: string
+    name: string
+  }
+}
+
+type FormattedEmployee = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  hostel: string
+  department: string
+  status: "active" | "inactive"
+  joinDate: string
+  avatar: string
+}
+
+
+// const employees = [
+//   {
+//     id: 1,
+//     name: "John Doe",
+//     email: "john.doe@hostelhub.com",
+//     phone: "+1 (555) 123-4567",
+//     hostel: "Sunrise Hostel",
+//     department: "Reception",
+//     status: "active",
+//     joinDate: "2023-01-15",
+//     avatar: "/placeholder.svg?height=40&width=40",
+//   },
+//   {
+//     id: 2,
+//     name: "Sarah Johnson",
+//     email: "sarah.j@hostelhub.com",
+//     phone: "+1 (555) 234-5678",
+//     hostel: "Moonlight Hostel",
+//     department: "Housekeeping",
+//     status: "active",
+//     joinDate: "2023-02-20",
+//     avatar: "/placeholder.svg?height=40&width=40",
+//   },
+//   {
+//     id: 3,
+//     name: "Mike Chen",
+//     email: "mike.chen@hostelhub.com",
+//     phone: "+1 (555) 345-6789",
+//     hostel: "City Center Hostel",
+//     department: "Maintenance",
+//     status: "inactive",
+//     joinDate: "2023-03-10",
+//     avatar: "/placeholder.svg?height=40&width=40",
+//   },
+//   {
+//     id: 4,
+//     name: "Emma Wilson",
+//     email: "emma.w@hostelhub.com",
+//     phone: "+1 (555) 456-7890",
+//     hostel: "Garden View Hostel",
+//     department: "Security",
+//     status: "active",
+//     joinDate: "2023-04-05",
+//     avatar: "/placeholder.svg?height=40&width=40",
+//   },
+// ]
 
 export default function EmployeesPage() {
   const [showAddEmployee, setShowAddEmployee] = useState(false)
@@ -67,6 +95,39 @@ export default function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState(null)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [employees, setEmployees] = useState<FormattedEmployee[]>([])
+  const [loading, setLoading] = useState(true)
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const res = await fetch("/api/employees?page=1&limit=20")
+        const json = await res.json()
+        const rawEmployees: Employee[] = json.data || []
+
+        const formatted: FormattedEmployee[] = rawEmployees.map((emp) => ({
+          id: emp.id,
+          name: `${emp.firstName} ${emp.lastName}`,
+          email: emp.email,
+          phone: emp.mobile || "N/A",
+          hostel: emp.room?.name || "Unassigned",
+          department: "employee",
+          status: emp.roomId ? "active" : "inactive",
+          joinDate: "not saved",
+          avatar: "/placeholder.svg?height=40&width=40",
+        }))
+
+        setEmployees(formatted)
+      } catch (err) {
+        console.error("Error fetching employees:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchEmployees()
+  }, [])
 
   const filteredEmployees = employees.filter(
     (employee) =>
@@ -75,20 +136,23 @@ export default function EmployeesPage() {
       employee.hostel.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const handleViewDetails = (employee) => {
-    setSelectedEmployee(employee)
-    setShowDetailsModal(true)
-  }
+  // const handleViewDetails = () => {
+  //   // setSelectedEmployee(employee)
+  //   // setShowDetailsModal(true)
+  //   setModalOpen(true);
+  // }
 
-  const handleEditEmployee = (employee) => {
-    setSelectedEmployee(employee)
-    setShowEditModal(true)
-  }
+  // const handleEditEmployee = () => {
+  //   // setSelectedEmployee(employee)
+  //   // setShowEditModal(true)
+  //   setModalOpen(true);
+  // }
 
-  const handleEditFromDetails = () => {
-    setShowDetailsModal(false)
-    setShowEditModal(true)
-  }
+  // const handleEditFromDetails = () => {
+  //   // setShowDetailsModal(false)
+  //   // setShowEditModal(true)
+  //   setModalOpen(true);
+  // }
 
   const activeEmployees = employees.filter((emp) => emp.status === "active").length
   const inactiveEmployees = employees.filter((emp) => emp.status === "inactive").length
@@ -222,9 +286,15 @@ export default function EmployeesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleViewDetails(employee)}>View Details</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleEditEmployee(employee)}>Edit</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => {
+                
+                setModalOpen(true);}}>View Details</DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => {
+                
+                setModalOpen(true);}}>Edit</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600" onClick={(e) => {
+                
+                setModalOpen(true);}}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -234,20 +304,30 @@ export default function EmployeesPage() {
             </Table>
           </CardContent>
         </Card>
+        <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
       </div>
 
       <AddEmployeeModal open={showAddEmployee} onOpenChange={setShowAddEmployee} />
       {selectedEmployee && (
         <>
-          <EmployeeDetailsModal
+        
+          {/* <EmployeeDetailsModal
             employee={selectedEmployee}
             open={showDetailsModal}
             onOpenChange={setShowDetailsModal}
             onEdit={handleEditFromDetails}
           />
-          <EmployeeEditModal employee={selectedEmployee} open={showEditModal} onOpenChange={setShowEditModal} />
+          <EmployeeEditModal employee={selectedEmployee} open={showEditModal} onOpenChange={setShowEditModal} /> */}
+          
         </>
       )}
     </DashboardLayout>
+
+    
   )
 }

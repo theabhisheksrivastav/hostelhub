@@ -13,6 +13,8 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Search, CalendarIcon, Clock, UserCheck, UserX, Download } from "lucide-react"
 import { format } from "date-fns"
+import Modal from "@/components/Modal"
+
 
 const attendanceData = [
   {
@@ -92,6 +94,7 @@ export default function AttendancePage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [hostelFilter, setHostelFilter] = useState("all")
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
+  const [isModalOpen, setModalOpen] = useState(true)
 
   const filteredAttendance = attendanceData.filter((record) => {
     const matchesSearch =
@@ -125,6 +128,12 @@ export default function AttendancePage() {
 
   return (
     <DashboardLayout>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
       <div className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>

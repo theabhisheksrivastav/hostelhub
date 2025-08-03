@@ -1,5 +1,5 @@
 "use client"
-
+import { useState} from "react"
 import { DashboardLayout } from "@/components/dashboard-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -18,6 +18,8 @@ import {
   Cell,
 } from "recharts"
 import { TrendingUp, TrendingDown, Users, Building, DollarSign, Calendar } from "lucide-react"
+import Modal from "@/components/Modal"
+
 
 const occupancyData = [
   { month: "Jan", occupancy: 85, revenue: 45000 },
@@ -53,8 +55,16 @@ const attendanceData = [
 ]
 
 export default function AnalyticsPage() {
+    const [isModalOpen, setModalOpen] = useState(true)
+
   return (
     <DashboardLayout>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
       <div className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>

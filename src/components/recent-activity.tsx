@@ -2,40 +2,76 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, UserCheck, Bed } from "lucide-react"
 
+// const activities = [
+//   {
+//     id: 1,
+//     type: "check-in",
+//     user: "Sarah Johnson",
+//     room: "Room 204",
+//     time: "2 minutes ago",
+//     icon: Bed,
+//   },
+//   {
+//     id: 2,
+//     type: "punch-in",
+//     user: "Mike Chen",
+//     department: "Maintenance",
+//     time: "15 minutes ago",
+//     icon: UserCheck,
+//   },
+//   {
+//     id: 3,
+//     type: "check-in",
+//     user: "Emma Wilson",
+//     room: "Room 156",
+//     time: "32 minutes ago",
+//     icon: Bed,
+//   },
+//   {
+//     id: 4,
+//     type: "punch-in",
+//     user: "David Brown",
+//     department: "Reception",
+//     time: "1 hour ago",
+//     icon: UserCheck,
+//   },
+// ]
 const activities = [
   {
     id: 1,
     type: "check-in",
-    user: "Sarah Johnson",
-    room: "Room 204",
-    time: "2 minutes ago",
+    user: "Backend Team",
+    room: "All Modules",
+    time: "ETA: Next Sunday 🤞",
     icon: Bed,
   },
   {
     id: 2,
-    type: "punch-in",
-    user: "Mike Chen",
-    department: "Maintenance",
-    time: "15 minutes ago",
+    type: "update-in-progress",
+    user: "Dev Ops",
+    department: "Server Room",
+    time: "Rolling out soon...",
     icon: UserCheck,
   },
   {
     id: 3,
     type: "check-in",
-    user: "Emma Wilson",
-    room: "Room 156",
-    time: "32 minutes ago",
+    user: "API Department",
+    room: "Codebase",
+    time: "Working hard 💻",
     icon: Bed,
   },
   {
     id: 4,
-    type: "punch-in",
-    user: "David Brown",
-    department: "Reception",
-    time: "1 hour ago",
+    type: "sneak-peek",
+    user: "You 😉",
+    department: "Dashboard",
+    time: "Stay tuned!",
     icon: UserCheck,
   },
 ]
+
+
 
 export function RecentActivity() {
   return (

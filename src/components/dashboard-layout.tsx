@@ -25,7 +25,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 
-import { signOut, useSession  } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -37,6 +37,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
+import Modal from "@/components/Modal"
+import Link from "next/link"
+
 
 
 const navigationItems = [
@@ -80,6 +83,7 @@ const navigationItems = [
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [showQRModal, setShowQRModal] = useState(false)
+
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -87,7 +91,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <Sidebar className="border-r border-gray-200">
         <SidebarHeader className="border-b border-gray-200 p-4">
-          <div className="flex items-center gap-3">
+          
+          <Link href={"/dashboard"}>
+          <div
+            className="flex items-center gap-3 cursor-pointer rounded-md px-2 py-1 transition-all hover:bg-gray-100 active:scale-95"
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-lg">
               H
             </div>
@@ -96,6 +104,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <p className="text-sm text-gray-500">Management System</p>
             </div>
           </div>
+          </Link>
         </SidebarHeader>
 
         <SidebarContent>
@@ -188,8 +197,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
       </SidebarInset>
-
-      <QRCodeModal open={showQRModal} onOpenChange={setShowQRModal} />
+      <Modal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
+      {/* <QRCodeModal open={showQRModal} onOpenChange={setShowQRModal} /> */}
     </SidebarProvider>
   )
 }

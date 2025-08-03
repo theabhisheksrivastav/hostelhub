@@ -14,8 +14,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { User, Building, Bell, Shield, Palette, Database, Mail, Smartphone, Globe, Save } from "lucide-react"
+import Modal from "@/components/Modal"
+
 
 export default function SettingsPage() {
+  const [isModalOpen, setModalOpen] = useState(true)
+
   const [notifications, setNotifications] = useState({
     email: true,
     push: false,
@@ -34,6 +38,12 @@ export default function SettingsPage() {
 
   return (
     <DashboardLayout>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        title="Feature Unavailable"
+        description="This feature is not yet available. We're working hard to launch it soon!"
+      />
       <div className="flex-1 space-y-6 p-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Settings</h1>

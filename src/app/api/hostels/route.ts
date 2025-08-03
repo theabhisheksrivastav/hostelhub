@@ -10,6 +10,13 @@ export async function GET() {
 
   const hostels = await prisma.hostel.findMany({
     where: { ownerId: user.id },
+    include: {
+      rooms: {
+      include: {
+        occupants: true,
+      },
+    },
+    },
   });
 
   return NextResponse.json(hostels);
