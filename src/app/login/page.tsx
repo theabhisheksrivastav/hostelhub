@@ -120,11 +120,11 @@ export default function LoginPage() {
                 <form onSubmit={handleEmailLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" placeholder="john@hostelhub.com" required />
+                    <Input id="email" name="email" type="email" placeholder="john@hostelhub.com" defaultValue={"john@hostelhub.com"} required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input id="password" name="password" type="password" required />
+                    <Input id="password" placeholder="1234" defaultValue={"1234"} name="password" type="password" required />
                   </div>
                   <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
                     {isLoading ? "Signing in..." : "Sign in"}
