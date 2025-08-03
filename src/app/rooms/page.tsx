@@ -237,6 +237,7 @@ export default function RoomsPage() {
               <Input
                 id="hostelId"
                 placeholder="cmdtl72pn0001jp04rzzblg3a"
+                defaultValue={"cmdtl72pn0001jp04rzzblg3a"}
                 value={formData.hostelId}
                 onChange={(e) => setFormData({ ...formData, hostelId: e.target.value })}
               />

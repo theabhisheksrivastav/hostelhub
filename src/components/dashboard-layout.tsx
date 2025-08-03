@@ -117,10 +117,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 {navigationItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
+                      <Link href={item.url} className="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors">
                         <item.icon className="h-5 w-5" />
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
