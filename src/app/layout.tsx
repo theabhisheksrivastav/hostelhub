@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   title: "HostelHub - Management System",
   description: "Modern hostel management dashboard",
   icons: {
-    icon: "/logo.ico",
-    shortcut: "/logo.ico",
+    icon: "/new-logo.png",
+    shortcut: "/new-logo.png",
     apple: "/favicon.ico",
   },
 };

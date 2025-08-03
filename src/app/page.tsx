@@ -1,7 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { useRef } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { ContactSalesModal } from "@/components/ContactSalesModal"
+import { PaymentModal } from "@/components/PaymentModal"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -91,26 +95,26 @@ const pricingPlans = [
   {
     name: "Starter",
     price: "$0",
-    period: "per property/month",
+    period: "forever",
     description: "Perfect for single hostel owners",
     features: ["Up to 50 rooms", "Basic analytics", "Employee management", "Email support", "Mobile access"],
-    popular: true,
+    popular: false,
   },
-  // {
-  //   name: "Professional",
-  //   price: "$79",
-  //   period: "per property/month",
-  //   description: "Ideal for growing hostel chains",
-  //   features: [
-  //     "Up to 200 rooms",
-  //     "Advanced analytics",
-  //     "Multi-property dashboard",
-  //     "Priority support",
-  //     "API access",
-  //     "Custom integrations",
-  //   ],
-  //   popular: true,
-  // },
+  {
+    name: "Professional",
+    price: "$69",
+    period: "month",
+    description: "Ideal for growing hostel chains",
+    features: [
+      "Razorpay integration",
+      // "Advanced analytics",
+      "Payment notifications",
+      "Priority support",
+      "Export data",
+      "Custom integrations",
+    ],
+    popular: false,
+  },
   {
     name: "Enterprise",
     price: "Custom",
@@ -122,14 +126,39 @@ const pricingPlans = [
       "Dedicated account manager",
       "24/7 phone support",
       "Custom development",
-      "SLA guarantee",
+      // "SLA guarantee",
     ],
-    popular: false,
+    popular: true,
   },
 ]
 
 export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showContactModal, setShowContactModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedPrice, setSelectedPrice] = useState("")
+  const router = useRouter()
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+    const scrollAmount = container.offsetWidth;
+    container.scrollBy({ left: direction === "left" ? -scrollAmount : scrollAmount, behavior: "smooth" });
+  };
+
+
+  const handleClick = (plan: any) => {
+    if (plan.price === "Custom") {
+      setShowContactModal(true)
+    } else if (plan.price === "$0" || plan.price.toLowerCase() === "free") {
+      router.push("/signup")
+    } else {
+      setSelectedPrice(plan.price)
+      setShowPaymentModal(true)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -192,7 +221,7 @@ export default function LandingPage() {
                 <Link href="/login" className="text-gray-600 hover:text-gray-900 transition-colors">
                   Sign In
                 </Link>
-                <Link href="/dashboard">
+                <Link href="/signup">
                   <Button className="bg-indigo-600 hover:bg-indigo-700 w-full">Get Started</Button>
                 </Link>
               </div>
@@ -215,7 +244,7 @@ export default function LandingPage() {
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Streamline operations, boost occupancy rates, and maximize revenue with our comprehensive hostel
-              management platform. Trusted by 500+ properties worldwide.
+              management platform. Trusted by at least 1 properties worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/signup">
@@ -224,10 +253,10 @@ export default function LandingPage() {
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="gap-2 bg-transparent">
+              {/* <Button size="lg" variant="outline" className="gap-2 bg-transparent">
                 <Play className="h-4 w-4" />
                 Watch Demo
-              </Button>
+              </Button> */}
             </div>
             <p className="text-sm text-gray-500 mt-4">No credit card required • It’s free (for now).</p>
           </div>
@@ -244,13 +273,15 @@ export default function LandingPage() {
                   <div className="ml-4 text-sm text-gray-500">hostelhub.com/dashboard</div>
                 </div>
               </div>
-              <div className="p-6">
-                <img
-                  src="/new-logo.svg"
-                  alt="HostelHub Dashboard"
-                  className="w-full h-auto rounded-lg"
-                />
+              <div className="p-6 w-full h-auto rounded-lg flex items-center">
+                <Link href="/">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold text-xl cursor-pointer hover:scale-105 transition">
+                    H
+                  </div>
+                </Link>
+                <span className="ml-3 text-lg font-semibold">HostelHub Dashboard</span>
               </div>
+
             </div>
           </div>
         </div>
@@ -386,45 +417,78 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {pricingPlans.map((plan, index) => (
-              <Card
-                key={index}
-                className={`relative bg-white shadow-sm border-gray-200 ${plan.popular ? "ring-2 ring-indigo-500 shadow-lg" : ""
-                  }`}
+          <div className="relative">
+            {/* Left Arrow */}
+            {pricingPlans.length > 3 && (
+              <button
+                onClick={() => scroll("left")}
+                className="absolute z-10 left-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
               >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-indigo-600 text-white">Most Popular</Badge>
-                  </div>
-                )}
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                    {plan.price !== "Custom" && <span className="text-gray-500">/{plan.period}</span>}
-                  </div>
-                  <p className="text-gray-600 mt-2">{plan.description}</p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center gap-3">
-                        <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        <span className="text-gray-600">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    className={`w-full mt-6 ${plan.popular ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-900 hover:bg-gray-800 text-white"
-                      }`}
+                ←
+              </button>
+            )}
+
+            {/* Carousel */}
+            <div
+              ref={scrollRef}
+              className={`flex overflow-x-auto no-scrollbar gap-6 px-2 py-6 scroll-smooth ${pricingPlans.length > 3 ? "snap-x snap-mandatory" : "grid grid-cols-1 md:grid-cols-3"}`}
+            >
+              {pricingPlans.map((plan, index) => (
+                <div
+                  key={index}
+                  className="min-w-[300px] max-w-sm flex-shrink-0 snap-center"
+                >
+                  <Card
+                    key={index}
+                    className={`relative bg-white shadow-sm border-gray-200 min-w-[300px] snap-start ${plan.popular ? "ring-2 ring-indigo-500 shadow-lg" : ""}`}
                   >
-                    {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    {plan.popular && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                        <Badge className="bg-indigo-600 text-white">Most Popular</Badge>
+                      </div>
+                    )}
+                    <CardHeader className="text-center">
+                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                      <div className="mt-4">
+                        <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                        {plan.price !== "Custom" && <span className="text-gray-500">/{plan.period}</span>}
+                      </div>
+                      <p className="text-gray-600 mt-2">{plan.description}</p>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <ul className="space-y-3">
+                        {plan.features.map((feature, featureIndex) => (
+                          <li key={featureIndex} className="flex items-center gap-3">
+                            <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+                            <span className="text-gray-600">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <Button
+                        className={`w-full mt-6 ${plan.popular ? "bg-indigo-600 hover:bg-indigo-700" : "bg-gray-900 hover:bg-gray-800 text-white"}`}
+                        onClick={() => handleClick(plan)}
+                      >
+                        {plan.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
+            </div>
+
+            {/* Right Arrow */}
+            {pricingPlans.length > 3 && (
+              <button
+                onClick={() => scroll("right")}
+                className="absolute z-10 right-0 top-1/2 -translate-y-1/2 bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+              >
+                →
+              </button>
+            )}
           </div>
+
+          <ContactSalesModal open={showContactModal} onOpenChange={setShowContactModal} />
+          <PaymentModal open={showPaymentModal} onOpenChange={setShowPaymentModal} price={selectedPrice} />
         </div>
       </section>
 
@@ -436,19 +500,19 @@ export default function LandingPage() {
             Join hundreds of hostel owners who have already streamlined their operations with HostelHub.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/dashboard">
+            <Link href="/signup">
               <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 gap-2">
                 Start Your Free Trial
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Button
+            {/* <Button
               size="lg"
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-indigo-600 bg-transparent"
             >
               Schedule a Demo
-            </Button>
+            </Button> */}
           </div>
           <p className="text-sm text-indigo-200 mt-4">It’s free (for now). • No setup fees • Cancel anytime</p>
         </div>

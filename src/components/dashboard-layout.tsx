@@ -1,33 +1,14 @@
 "use client"
 
 import type React from "react"
-import { signOut, useSession  } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import {
-  Bell,
-  QrCode,
-  Search,
-  Settings,
-  Users,
-  Building,
-  Bed,
-  Calendar,
-  BarChart3,
-  Home,
-  ChevronDown,
-} from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useState } from "react"
+import { OrganizationSelector } from "./organization-selector"
+import { QRCodeModal } from "./qr-code-modal"
+import { NotificationsDropdown } from "./notifications-dropdown"
+
+import { QrCode, Search, Settings, Users, Building, Bed, Calendar, BarChart3, Home, ChevronDown, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
 import {
   Sidebar,
   SidebarContent,
@@ -43,6 +24,20 @@ import {
   SidebarRail,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+
+import { signOut, useSession  } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Badge } from "@/components/ui/badge"
+
 
 const navigationItems = [
   {
@@ -84,6 +79,7 @@ const navigationItems = [
 ]
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [showQRModal, setShowQRModal] = useState(false)
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -137,47 +133,38 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" className="md:hidden bg-transparent">
+            <Button
+              variant="outline"
+              size="icon"
+              className="md:hidden bg-transparent"
+              onClick={() => setShowQRModal(true)}
+            >
               <QrCode className="h-4 w-4" />
             </Button>
 
-            <Button variant="outline" size="icon" className="hidden md:flex bg-transparent">
+            <Button
+              variant="outline"
+              size="icon"
+              className="hidden md:flex bg-transparent"
+              onClick={() => setShowQRModal(true)}
+            >
               <QrCode className="h-4 w-4" />
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2 bg-transparent">
-                  <Building className="h-4 w-4" />
-                  <span className="hidden md:inline">Sunrise Hostel</span>
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Select Organization</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Sunrise Hostel</DropdownMenuItem>
-                <DropdownMenuItem>Moonlight Hostel</DropdownMenuItem>
-                <DropdownMenuItem>City Center Hostel</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <OrganizationSelector />
 
-            <Button variant="outline" size="icon" className="relative bg-transparent">
-              <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-red-500">3</Badge>
-            </Button>
-
+            <NotificationsDropdown />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar className="h-10 w-10">
-  <AvatarImage 
-    src={session?.user?.name || ""} 
-    alt={session?.user?.name || "User"} 
-  />
-  <AvatarFallback className="bg-indigo-500 text-white">
-    {session?.user?.name?.charAt(0).toUpperCase() || "U"}
-  </AvatarFallback>
+                    <AvatarImage
+                      src={session?.user?.name || ""}
+                      alt={session?.user?.name || "User"}
+                    />
+                    <AvatarFallback className="bg-indigo-500 text-white">
+                      {session?.user?.name?.charAt(0).toUpperCase() || "U"}
+                    </AvatarFallback>
 
                   </Avatar>
                 </Button>
@@ -201,6 +188,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
         <main className="flex-1 overflow-auto bg-gray-50">{children}</main>
       </SidebarInset>
+
+      <QRCodeModal open={showQRModal} onOpenChange={setShowQRModal} />
     </SidebarProvider>
   )
 }

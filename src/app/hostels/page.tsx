@@ -18,6 +18,8 @@ import {
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Building, MapPin, Users, Bed, Star } from "lucide-react"
+import { HostelDetailsModal } from "@/components/hostel-details-modal"
+import { HostelManageModal } from "@/components/hostel-manage-modal"
 
 const hostels = [
   {
@@ -72,10 +74,23 @@ const hostels = [
 
 export default function HostelsPage() {
   const [showAddHostel, setShowAddHostel] = useState(false)
+  const [selectedHostel, setSelectedHostel] = useState(null)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showManageModal, setShowManageModal] = useState(false)
 
   const totalRooms = hostels.reduce((sum, hostel) => sum + hostel.totalRooms, 0)
   const totalOccupied = hostels.reduce((sum, hostel) => sum + hostel.occupiedRooms, 0)
   const averageOccupancy = Math.round((totalOccupied / totalRooms) * 100)
+
+  const handleViewDetails = (hostel) => {
+    setSelectedHostel(hostel)
+    setShowDetailsModal(true)
+  }
+
+  const handleManage = (hostel) => {
+    setSelectedHostel(hostel)
+    setShowManageModal(true)
+  }
 
   return (
     <DashboardLayout>
@@ -199,10 +214,19 @@ export default function HostelsPage() {
                   </div>
 
                   <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="flex-1 bg-transparent">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 bg-transparent"
+                      onClick={() => handleViewDetails(hostel)}
+                    >
                       View Details
                     </Button>
-                    <Button size="sm" className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                    <Button
+                      size="sm"
+                      className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                      onClick={() => handleManage(hostel)}
+                    >
                       Manage
                     </Button>
                   </div>
@@ -254,6 +278,12 @@ export default function HostelsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {selectedHostel && (
+        <>
+          <HostelDetailsModal hostel={selectedHostel} open={showDetailsModal} onOpenChange={setShowDetailsModal} />
+          <HostelManageModal hostel={selectedHostel} open={showManageModal} onOpenChange={setShowManageModal} />
+        </>
+      )}
     </DashboardLayout>
   )
 }
