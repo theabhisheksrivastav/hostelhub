@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react"
 
 export function WelcomeSection() {
   const { data: session } = useSession()
-  const user = session!.user || { name: "Guest" };
+  const user = session?.user || { name: "Guest" };
   return (
     <div className="flex items-center justify-between">
       <div>
