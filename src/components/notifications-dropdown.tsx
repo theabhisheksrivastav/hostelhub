@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -83,6 +84,7 @@ const notifications = [
 ]
 
 export function NotificationsDropdown() {
+  const router = useRouter();
   const [notificationList, setNotificationList] = useState(notifications)
   const unreadCount = notificationList.filter((n) => !n.read).length
 
@@ -177,7 +179,10 @@ export function NotificationsDropdown() {
         )}
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="p-3 text-center text-sm text-indigo-600 hover:text-indigo-700 cursor-pointer">
+        <DropdownMenuItem
+          onClick={() => router.push("/notifications")}
+          className="p-3 text-center text-sm text-indigo-600 hover:text-indigo-700 cursor-pointer"
+        >
           View all notifications
         </DropdownMenuItem>
       </DropdownMenuContent>

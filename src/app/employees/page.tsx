@@ -11,6 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AddEmployeeModal } from "@/components/add-employee-modal"
 import { Plus, Search, Filter, MoreHorizontal, Users, UserCheck, UserX } from "lucide-react"
+import { EmployeeDetailsModal } from "@/components/employee-details-modal"
+import { EmployeeEditModal } from "@/components/employee-edit-modal"
 
 const employees = [
   {
@@ -62,6 +64,9 @@ const employees = [
 export default function EmployeesPage() {
   const [showAddEmployee, setShowAddEmployee] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
+  const [selectedEmployee, setSelectedEmployee] = useState(null)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
 
   const filteredEmployees = employees.filter(
     (employee) =>
@@ -69,6 +74,21 @@ export default function EmployeesPage() {
       employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.hostel.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  const handleViewDetails = (employee) => {
+    setSelectedEmployee(employee)
+    setShowDetailsModal(true)
+  }
+
+  const handleEditEmployee = (employee) => {
+    setSelectedEmployee(employee)
+    setShowEditModal(true)
+  }
+
+  const handleEditFromDetails = () => {
+    setShowDetailsModal(false)
+    setShowEditModal(true)
+  }
 
   const activeEmployees = employees.filter((emp) => emp.status === "active").length
   const inactiveEmployees = employees.filter((emp) => emp.status === "inactive").length
@@ -202,8 +222,8 @@ export default function EmployeesPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleViewDetails(employee)}>View Details</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditEmployee(employee)}>Edit</DropdownMenuItem>
                           <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -217,6 +237,17 @@ export default function EmployeesPage() {
       </div>
 
       <AddEmployeeModal open={showAddEmployee} onOpenChange={setShowAddEmployee} />
+      {selectedEmployee && (
+        <>
+          <EmployeeDetailsModal
+            employee={selectedEmployee}
+            open={showDetailsModal}
+            onOpenChange={setShowDetailsModal}
+            onEdit={handleEditFromDetails}
+          />
+          <EmployeeEditModal employee={selectedEmployee} open={showEditModal} onOpenChange={setShowEditModal} />
+        </>
+      )}
     </DashboardLayout>
   )
 }
