@@ -1,8 +1,0 @@
-// ✅ app/client-root.tsx
-"use client"
-
-import { SessionProvider } from "next-auth/react"
-
-export default function ClientRoot({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>
-}
